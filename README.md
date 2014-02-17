@@ -15,7 +15,11 @@ Download the package and install it via admin interface -> package manager.
 
 **Configuration**
 
-No configuration required.
+Configure it via admin interface -> SysConfig
+Ticket -> Frontend::Agent::Dashboard
+-> DashboardBackend###0090-MyTicketsDashlet
+
+By default the module is enabled.
 
 Have fun!
 
