@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <otrs_package version="1.0">
     <Name>MyTicketsDashlet</Name>
-    <Version>0.0.3</Version>
+    <Version>0.0.4</Version>
     <Framework>3.3.x</Framework>
     <BuildDate>?</BuildDate>
     <BuildHost>?</BuildHost>
@@ -9,6 +9,7 @@
     <URL>http://www.mawoh.de/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
     <ChangeLog Version="0.0.3" Date="2014-02-17 22:00:00">First release.</ChangeLog>
+    <ChangeLog Version="0.0.4" Date="2014-03-18 14:20:00">add translations, fix default settings in sysconfig xml</ChangeLog>
     <Description Lang="en">MyTicketsDashlet provides a dashboard widget that shows all tickets of an agent..</Description>
     <Description Lang="de">MyTicketsDashlet stellt ein Dashboard Widget zur Verf&amp;uuml;gung, welches alle Tickets des angemeldeten Agenten anzeigt.</Description>
     <IntroInstall Lang="en" Title="Install Information" Type="pre">
