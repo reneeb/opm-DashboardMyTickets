@@ -8,7 +8,9 @@
 
 <!-- dtl:block:ContentLargeTicketGenericFilter -->
 <ul class="Tab Actions">
-    <li class="$QData{"Open::Selected"} Last"><a href="#" id="Dashboard$QData{"Name"}Open" data-filter="Open">$Text{"My open tickets"} ($QData{"Open"})</a></li>
+    <li class="$QData{"Open::Selected"}"><a href="#" id="Dashboard$QData{"Name"}Open" data-filter="Open">$Text{"Open tickets"} ($QData{"Open"})</a></li>
+    <li class="$QData{"Reminder::Selected"}"><a href="#" id="Dashboard$QData{"Name"}Reminder" data-filter="Reminder">$Text{"Reminder tickets"} ($QData{"Reminder"})</a></li>
+    <li class="$QData{"Pending::Selected"}"><a href="#" id="Dashboard$QData{"Name"}Pending" data-filter="Pending">$Text{"Pending tickets"} ($QData{"Pending"})</a></li>
 </ul>
 <!-- dtl:block:ContentLargeTicketGenericFilterNavBar -->
 <span class="Pagination">

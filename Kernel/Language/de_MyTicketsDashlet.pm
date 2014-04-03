@@ -15,8 +15,10 @@ sub Data {
     my $Self = shift;
 
     # Template: AAAITSMConfigItem
-    $Self->{Translation}->{'My open tickets'} = 'Meine offenen Tickets';
-    $Self->{Translation}->{'My Open Tickets'} = 'Meine offenen Tickets';
+    $Self->{Translation}->{'My Tickets'} = 'Meine Tickets';
+    $Self->{Translation}->{'Open tickets'} = 'offenen Tickets';
+    $Self->{Translation}->{'Reminder tickets'} = 'Erinnerungstickets';
+    $Self->{Translation}->{'Pending tickets'} = 'Wartentickets';
 
 }
 
