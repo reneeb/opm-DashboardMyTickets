@@ -1810,7 +1810,6 @@ sub _SearchParamsGet {
             $Key
             =~ /^(StateType|StateTypeIDs|Queues|QueueIDs|Types|TypeIDs|States|StateIDs|Priorities|PriorityIDs|Services|ServiceIDs|SLAs|SLAIDs|Locks|LockIDs|OwnerIDs|ResponsibleIDs|WatchUserIDs|ArchiveFlags)$/
             )
-        
         {
             push @{ $TicketSearch{$Key} }, $Value;
         }
@@ -1876,38 +1875,18 @@ sub _SearchParamsGet {
         Open => {
             OwnerIDs => [ $Self->{UserID}, ],
             Locks => undef,
-	    StateType => [ 'open' ],
+            StateType => [ 'open' ],
         },
         Reminder=> {
             OwnerIDs => [ $Self->{UserID}, ],
             Locks => undef,
-	    StateType => [ 'pending reminder' ],
+            StateType => [ 'pending reminder' ],
         },
         Pending => {
             OwnerIDs => [ $Self->{UserID}, ],
             Locks => undef,
-	    StateType => [ 'pending' ],
+            StateType => [ 'pending' ],
         },
-###        Watcher => {
-###            WatchUserIDs => [ $Self->{UserID}, ],
-###            Locks        => undef,
-###        },
-###        Responsible => {
-###            ResponsibleIDs => [ $Self->{UserID}, ],
-###            Locks          => undef,
-###        },
-###        Owner => {
-###            OwnerIDs => [ $Self->{UserID}, ],
-###            Locks    => undef,
-###        },
-###        MyQueues => {
-###            QueueIDs => \@MyQueues,
-###            Locks    => undef,
-###        },
-###        All => {
-###            OwnerIDs => undef,
-###            Locks    => undef,
-###        },
     );
 
     if ( defined $TicketSearch{QueueIDs} || defined $TicketSearch{Queues} ) {
