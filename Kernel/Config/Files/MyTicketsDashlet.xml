@@ -7,9 +7,9 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardTicketMyTicketsDashlet</Item>
-                <Item Key="Title">My Open Tickets</Item>
-                <Item Key="Description">All my open tickets</Item>
-                <Item Key="Attributes">StateType=open;</Item>
+                <Item Key="Title">My Tickets</Item>
+                <Item Key="Description">All my tickets</Item>
+                <Item Key="Attributes"></Item>
                 <Item Key="Filter">Open</Item>
                 <Item Key="Time">Age</Item>
                 <Item Key="Limit">25</Item>
@@ -31,7 +31,7 @@
                         <Item Key="EscalationUpdateTime">1</Item>
                         <Item Key="TicketNumber">2</Item>
                         <Item Key="Lock">1</Item>
-                        <Item Key="Owner">0</Item>
+                        <Item Key="Owner">1</Item>
                         <Item Key="PendingTime">1</Item>
                         <Item Key="Queue">2</Item>
                         <Item Key="Responsible">1</Item>

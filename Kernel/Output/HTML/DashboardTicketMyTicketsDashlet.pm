@@ -1805,16 +1805,12 @@ sub _SearchParamsGet {
         next if !$String;
         my ( $Key, $Value ) = split /=/, $String;
 
-###        # push ARRAYREF attributes directly in an ARRAYREF
-###        if (
-###            $Key
-###            =~ /^(StateType|StateTypeIDs|Queues|QueueIDs|Types|TypeIDs|States|StateIDs|Priorities|PriorityIDs|Services|ServiceIDs|SLAs|SLAIDs|Locks|LockIDs|OwnerIDs|ResponsibleIDs|WatchUserIDs|ArchiveFlags)$/
-###            )
-###        {
-	# NEW
-        if ( $Key eq 'StateType')
-	# ENDNEW
-	{
+        # push ARRAYREF attributes directly in an ARRAYREF
+        if (
+            $Key
+            =~ /^(StateType|StateTypeIDs|Queues|QueueIDs|Types|TypeIDs|States|StateIDs|Priorities|PriorityIDs|Services|ServiceIDs|SLAs|SLAIDs|Locks|LockIDs|OwnerIDs|ResponsibleIDs|WatchUserIDs|ArchiveFlags)$/
+            )
+        {
             push @{ $TicketSearch{$Key} }, $Value;
         }
 
@@ -1878,27 +1874,18 @@ sub _SearchParamsGet {
     my %TicketSearchSummary = (
         Open => {
             OwnerIDs => [ $Self->{UserID}, ],
-###            Locks => [ 'lock', 'tmp_lock' ],
-###        },
-###        Watcher => {
-###            WatchUserIDs => [ $Self->{UserID}, ],
-###            Locks        => undef,
-###        },
-###        Responsible => {
-###            ResponsibleIDs => [ $Self->{UserID}, ],
-###            Locks          => undef,
-###        },
-###        Owner => {
-###            OwnerIDs => [ $Self->{UserID}, ],
-###            Locks    => undef,
-###        },
-###        MyQueues => {
-###            QueueIDs => \@MyQueues,
-###            Locks    => undef,
-###        },
-###        All => {
-###            OwnerIDs => undef,
-            Locks    => undef,
+            Locks => undef,
+            StateType => [ 'open' ],
+        },
+        Reminder=> {
+            OwnerIDs => [ $Self->{UserID}, ],
+            Locks => undef,
+            StateType => [ 'pending reminder' ],
+        },
+        Pending => {
+            OwnerIDs => [ $Self->{UserID}, ],
+            Locks => undef,
+            StateType => [ 'pending' ],
         },
     );
 
