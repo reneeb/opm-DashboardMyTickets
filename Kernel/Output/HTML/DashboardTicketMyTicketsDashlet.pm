@@ -1885,7 +1885,7 @@ sub _SearchParamsGet {
         Pending => {
             OwnerIDs => [ $Self->{UserID}, ],
             Locks => undef,
-            StateType => [ 'pending' ],
+            StateType => [ 'pending auto' ],
         },
     );
 
