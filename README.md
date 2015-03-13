@@ -3,7 +3,7 @@
 OTRS Module MyTicketsDashlet
 ============================
 
-This packages provides dashboard module that show only my tickets.
+This packages provides dashboard module that shows only my tickets.
 
 **Prerequisites**
 
@@ -16,8 +16,8 @@ Download the package and install it via admin interface -> package manager.
 **Configuration**
 
 Configure it via admin interface -> SysConfig
-Ticket -> Frontend::Agent::Dashboard
--> DashboardBackend###0090-MyTicketsDashlet
+
+Ticket -> Frontend::Agent::Dashboard -> DashboardBackend###0090-MyTicketsDashlet
 
 By default the module is enabled.
 
