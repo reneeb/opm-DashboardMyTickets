@@ -1,6 +1,5 @@
 # --
-# AgentDashboardTicketGeneric.tt - provides HTML for global dashboard
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# AgentDashboardTicketMyTicketsDashlet.tt - provides HTML for global dashboard
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -9,20 +8,9 @@
 
 [% RenderBlockStart("ContentLargeTicketGenericFilter") %]
 <ul class="Tab Actions">
-    <li class="[% Data.item("Locked::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Locked" data-filter="Locked">[% Translate("My locked tickets") | html %] ([% Data.Locked | html %])</a></li>
-[% RenderBlockStart("ContentLargeTicketGenericFilterWatcher") %]
-    <li class="[% Data.item("Watcher::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Watcher" data-filter="Watcher">[% Translate("My watched tickets") | html %] ([% Data.Watcher | html %])</a></li>
-[% RenderBlockEnd("ContentLargeTicketGenericFilterWatcher") %]
-[% RenderBlockStart("ContentLargeTicketGenericFilterResponsible") %]
-    <li class="[% Data.item("Responsible::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Responsible" data-filter="Responsible">[% Translate("My responsibilities") | html %] ([% Data.Responsible | html %])</a></li>
-[% RenderBlockEnd("ContentLargeTicketGenericFilterResponsible") %]
-[% RenderBlockStart("ContentLargeTicketGenericFilterMyQueues") %]
-    <li class="[% Data.item("MyQueues::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]MyQueues" data-filter="MyQueues">[% Translate("Tickets in My Queues") | html %] ([% Data.MyQueues | html %])</a></li>
-[% RenderBlockEnd("ContentLargeTicketGenericFilterMyQueues") %]
-[% RenderBlockStart("ContentLargeTicketGenericFilterMyServices") %]
-    <li class="[% Data.item("MyServices::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]MyServices" data-filter="MyServices">[% Translate("Tickets in My Services") | html %] ([% Data.MyServices | html %])</a></li>
-[% RenderBlockEnd("ContentLargeTicketGenericFilterMyServices") %]
-    <li class="[% Data.item("All::Selected") | html %] Last"><a href="#" id="Dashboard[% Data.Name | html %]All" data-filter="All">[% Translate("All tickets") | html %] ([% Data.All | html %])</a></li>
+    <li class="[% Data.item("Open::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Open" data-filter="Open">[% Translate("Open tickets") | html %] ([% Data.Open | html %])</a></li>
+    <li class="[% Data.item("Reminder::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Reminder" data-filter="Reminder">[% Translate("Reminder tickets") | html %] ([% Data.Reminder | html %])</a></li>
+    <li class="[% Data.item("Pending::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Pending" data-filter="Pending">[% Translate("Pending tickets") | html %] ([% Data.Pending | html %])</a></li>
 </ul>
 [% RenderBlockStart("ContentLargeTicketGenericFilterNavBar") %]
 <span class="Pagination">
@@ -507,7 +495,7 @@ $('.DashboardHeader').off('click').on('click', '.ColumnSettingsTrigger', functio
 [% RenderBlockEnd("ContentLargeTicketGenericEscalationTime") %]
 [% RenderBlockStart("ContentLargeTicketGenericColumn") %]
                 <td>
-                    <div title="[% Data.GenericValue | html %]">[% Data.GenericValue | truncate(40) | html %]</div>
+                    <div title="[% Data.GenericValue | html %]">[% Data.GenericValue | truncate(78) | html %]</div>
                 </td>
 [% RenderBlockEnd("ContentLargeTicketGenericColumn") %]
 [% RenderBlockStart("ContentLargeTicketTitle") %]
