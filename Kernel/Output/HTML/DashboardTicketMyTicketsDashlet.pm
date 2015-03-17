@@ -1,13 +1,12 @@
 # --
-# Kernel/Output/HTML/DashboardTicketGeneric.pm
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Kernel/Output/HTML/DashboardTicketMyTicketsDashlet.pm
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::Output::HTML::DashboardTicketGeneric;
+package Kernel::Output::HTML::DashboardTicketMyTicketsDashlet;
 
 use strict;
 use warnings;
@@ -46,8 +45,8 @@ sub new {
     }
 
     # save column filters
-    $Self->{PrefKeyColumnFilters}         = 'UserDashboardTicketGenericColumnFilters' . $Self->{Name};
-    $Self->{PrefKeyColumnFiltersRealKeys} = 'UserDashboardTicketGenericColumnFiltersRealKeys' . $Self->{Name};
+    $Self->{PrefKeyColumnFilters}         = 'UserDashboardTicketMyTicketsColumnFilters' . $Self->{Name};
+    $Self->{PrefKeyColumnFiltersRealKeys} = 'UserDashboardTicketMyTicketsColumnFiltersRealKeys' . $Self->{Name};
 
     # get needed objects
     my $JSONObject   = $Kernel::OM->Get('Kernel::System::JSON');
@@ -185,7 +184,7 @@ sub new {
 
     # get current filter
     my $Name = $ParamObject->GetParam( Param => 'Name' ) || '';
-    my $PreferencesKey = 'UserDashboardTicketGenericFilter' . $Self->{Name};
+    my $PreferencesKey = 'UserDashboardTicketMyTicketsFilter' . $Self->{Name};
     if ( $Self->{Name} eq $Name ) {
         $Self->{Filter} = $ParamObject->GetParam( Param => 'Filter' ) || '';
     }
@@ -362,6 +361,8 @@ sub Preferences {
                 15 => '15',
                 20 => '20',
                 25 => '25',
+                50 => '50',
+                75 => '75',
             },
             SelectedID  => $Self->{PageShown},
             Translation => 0,
@@ -675,58 +676,6 @@ sub Run {
 
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    # show also watcher if feature is enabled
-    if ( $ConfigObject->Get('Ticket::Watcher') ) {
-        $LayoutObject->Block(
-            Name => 'ContentLargeTicketGenericFilterWatcher',
-            Data => {
-                %Param,
-                %{ $Self->{Config} },
-                Name => $Self->{Name},
-                %{$Summary},
-            },
-        );
-    }
-
-    # show also responsible if feature is enabled
-    if ( $ConfigObject->Get('Ticket::Responsible') ) {
-        $LayoutObject->Block(
-            Name => 'ContentLargeTicketGenericFilterResponsible',
-            Data => {
-                %Param,
-                %{ $Self->{Config} },
-                Name => $Self->{Name},
-                %{$Summary},
-            },
-        );
-    }
-
-    # show only myqueues if we have the filter
-    if ( $TicketSearchSummary{MyQueues} ) {
-        $LayoutObject->Block(
-            Name => 'ContentLargeTicketGenericFilterMyQueues',
-            Data => {
-                %Param,
-                %{ $Self->{Config} },
-                Name => $Self->{Name},
-                %{$Summary},
-            },
-        );
-    }
-
-    # show only myservices if we have the filter
-    if ( $TicketSearchSummary{MyServices} ) {
-        $LayoutObject->Block(
-            Name => 'ContentLargeTicketGenericFilterMyServices',
-            Data => {
-                %Param,
-                %{ $Self->{Config} },
-                Name => $Self->{Name},
-                %{$Summary},
-            },
-        );
-    }
 
     # add page nav bar
     my $Total = $Summary->{ $Self->{Filter} } || 0;
@@ -1629,7 +1578,7 @@ sub Run {
     }
 
     my $Content = $LayoutObject->Output(
-        TemplateFile => 'AgentDashboardTicketGeneric',
+        TemplateFile => 'AgentDashboardTicketMyTicketsDashlet',
         Data         => {
             %{ $Self->{Config} },
             Name => $Self->{Name},
@@ -2077,31 +2026,21 @@ sub _SearchParamsGet {
     }
 
     my %TicketSearchSummary = (
-        Locked => {
-            OwnerIDs => [ $Self->{UserID}, ],
-            LockIDs  => [ '2', '3' ],           # 'lock' and 'tmp_lock'
-        },
-        Watcher => {
-            WatchUserIDs => [ $Self->{UserID}, ],
-            LockIDs      => $TicketSearch{LockIDs} // undef,
-        },
-        Responsible => {
-            ResponsibleIDs => [ $Self->{UserID}, ],
-            LockIDs        => $TicketSearch{LockIDs} // undef,
-        },
-        MyQueues => {
-            QueueIDs => \@MyQueues,
-            LockIDs  => $TicketSearch{LockIDs} // undef,
-        },
-        MyServices => {
-            QueueIDs   => \@ViewableQueueIDs,
-            ServiceIDs => \@MyServiceIDs,
-            LockIDs    => $TicketSearch{LockIDs} // undef,
-        },
-        All => {
-            OwnerIDs => undef,
-            LockIDs  => $TicketSearch{LockIDs} // undef,
-        },
+		Open => {
+				OwnerIDs => [ $Self->{UserID}, ],
+				StateType => [ 'open', ],
+				LockIDs      => $TicketSearch{LockIDs} // undef,
+		},
+		Reminder => {
+				OwnerIDs => [ $Self->{UserID}, ],
+				StateType => [ 'pending reminder', ],
+				LockIDs      => $TicketSearch{LockIDs} // undef,
+		},
+		Pending => {
+				OwnerIDs => [ $Self->{UserID}, ],
+				StateType => [ 'pending auto', ],
+				LockIDs      => $TicketSearch{LockIDs} // undef,
+		},
     );
 
     if ( defined $TicketSearch{QueueIDs} || defined $TicketSearch{Queues} ) {
