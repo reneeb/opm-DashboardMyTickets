@@ -177,6 +177,6 @@
         <File Permission="644" Location="Kernel/Config/Files/MyTicketsDashlet.xml"></File>
         <File Permission="644" Location="Kernel/Language/de_MyTicketsDashlet.pm"></File>
         <File Permission="644" Location="Kernel/Output/HTML/DashboardTicketMyTicketsDashlet.pm"></File>
-        <File Permission="644" Location="Kernel/Output/HTML/Standard/AgentDashboardTicketMyTicketsDashlet.dtl"></File>
+        <File Permission="644" Location="Kernel/Output/HTML/Standard/AgentDashboardTicketMyTicketsDashlet.tt"></File>
     </Filelist>
 </otrs_package>
