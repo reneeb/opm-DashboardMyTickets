@@ -1,0 +1,44 @@
+=pod
+
+=head1 Name
+
+MyTicketsDashlet
+
+=head1 Description
+
+This packages provides dashboard module that shows only my tickets.
+
+=head1 Prerequisites
+
+=over
+
+=item * OTRS 4.0
+
+=back
+
+=head1 Installation
+
+Download the package and install it via admin interface -> package manager.
+
+=head1 Configuration
+
+=over
+
+=item * Configure it via admin interface -> SysConfig
+
+=item * Ticket -> Frontend::Agent::Dashboard -> DashboardBackend###0090-MyTicketsDashlet
+
+=item * By default the module is enabled.
+
+=back
+
+=head1 Source Code
+
+Fork me on github L<https://github.com/freneticf/MyTicketsDashlet>
+
+=head1 License
+
+This software comes with ABSOLUTELY NO WARRANTY. For details, see the enclosed file COPYING for license information (AGPL). If you did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+
+=cut
+

@@ -7,7 +7,7 @@ This packages provides dashboard module that shows only my tickets.
 
 **Prerequisites**
 
-- OTRS 3.3
+- OTRS 4.0
 
 **Installation**
 
