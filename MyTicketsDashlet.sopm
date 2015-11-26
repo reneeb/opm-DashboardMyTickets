@@ -2,7 +2,7 @@
 <otrs_package version="1.0">
     <Name>MyTicketsDashlet</Name>
     <Version>0.0.9</Version>
-    <Framework>4.0.x</Framework>
+    <Framework>5.0.x</Framework>
     <BuildDate>?</BuildDate>
     <BuildHost>?</BuildHost>
     <Vendor>MAWOH GmbH</Vendor>
