@@ -6,7 +6,7 @@
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::DashboardTicketMyTicketsDashlet</Item>
+                <Item Key="Module">Kernel::Output::HTML::Dashboard::TicketMyTicketsDashlet</Item>
                 <Item Key="Title">My Tickets</Item>
                 <Item Key="Description">All my tickets</Item>
                 <Item Key="Attributes"></Item>
