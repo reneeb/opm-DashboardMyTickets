@@ -12,7 +12,7 @@ This packages provides dashboard module that shows only my tickets.
 
 =over
 
-=item * OTRS 4.0
+=item * OTRS 5.0
 
 =back
 

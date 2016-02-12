@@ -1,12 +1,12 @@
 # --
-# Kernel/Output/HTML/DashboardTicketMyTicketsDashlet.pm
+# Kernel/Output/HTML/Dashboard/TicketMyTicketsDashlet.pm
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::Output::HTML::DashboardTicketMyTicketsDashlet;
+package Kernel::Output::HTML::Dashboard::TicketMyTicketsDashlet;
 
 use strict;
 use warnings;
@@ -1286,6 +1286,8 @@ sub Run {
         # get needed objects
         my $BackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
         my $UserObject    = $Kernel::OM->Get('Kernel::System::User');
+        
+        my %CustomerInfo;
 
         # show all needed columns
         COLUMN:
@@ -1441,6 +1443,15 @@ sub Run {
                         );
                     }
                     $DataValue = $CustomerName;
+                }
+                elsif ( substr( $Column, 0, 8 ) eq 'Customer' ) {
+
+                    if ( $Ticket{CustomerUserID} && !%CustomerInfo ) {
+                        %CustomerInfo = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
+                            User => $Ticket{CustomerUserID},
+                        );
+                    }
+                    $DataValue = $CustomerInfo{$Column};
                 }
                 else {
                     $DataValue = $Ticket{$Column};
