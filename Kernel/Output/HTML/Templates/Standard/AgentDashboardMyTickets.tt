@@ -1,5 +1,6 @@
 # --
-# AgentDashboardTicketMyTicketsDashlet.tt - provides HTML for global dashboard
+# Copyright (c) 2018- Perl-Services.de, http://perl-services.de
+# Based on Kernel/Output/HTML/Templates/Standard/AgentDashboardTicketMyTicketsDashlet.tt copyright (c) 2014-2018 Mawoh GmbH
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

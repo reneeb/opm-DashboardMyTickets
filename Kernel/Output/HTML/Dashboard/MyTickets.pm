@@ -1,12 +1,13 @@
 # --
-# Kernel/Output/HTML/Dashboard/TicketMyTicketsDashlet.pm
+# Copyright (c) 2018- Perl-Services.de, http://perl-services.de
+# Based on Kernel/Output/HTML/Dashboard/TicketDashboardMyTickets.pm copyright (c) 2014-2018 Mawoh GmbH
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::Output::HTML::Dashboard::TicketMyTicketsDashlet;
+package Kernel::Output::HTML::Dashboard::MyTickets;
 
 use strict;
 use warnings;
@@ -1589,7 +1590,7 @@ sub Run {
     }
 
     my $Content = $LayoutObject->Output(
-        TemplateFile => 'AgentDashboardTicketMyTicketsDashlet',
+        TemplateFile => 'AgentDashboardMyTickets',
         Data         => {
             %{ $Self->{Config} },
             Name => $Self->{Name},

@@ -1,0 +1,16 @@
+{
+    "name": "DashboardMyTickets",
+    "version": "6.0.1",
+    "framework": [
+        "6.0.x"
+    ],
+    "vendor": {
+        "name": "Perl-Services.de",
+        "url": "http://www.perl-services.de"
+    },
+    "license": "GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007",
+    "description" : {
+        "en": "A dashboard widget that shows all tickets of an agent.",
+        "de": "Ein Dashboardwidget, das alle Tickets eines Agenten anzeigt"
+    }
+}

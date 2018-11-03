@@ -1,13 +1,12 @@
-![MAWOH logo](http://www.mawoh.de/wp-content/themes/xtreme-minimalist/images/mawohheader.png)
-
-OTRS Module MyTicketsDashlet
-============================
+DashboardMyTickets
+==================
 
 This packages provides dashboard module that shows only my tickets.
+This is a fork of [MyTicketsDashlet](https://github.com/freneticf/MyTicketsDashlet)
 
 **Prerequisites**
 
-- OTRS 5.0
+- OTRS 6.0
 
 **Installation**
 
@@ -17,12 +16,6 @@ Download the package and install it via admin interface -> package manager.
 
 Configure it via admin interface -> SysConfig
 
-Ticket -> Frontend::Agent::Dashboard -> DashboardBackend###0090-MyTicketsDashlet
+Ticket -> Frontend::Agent::Dashboard -> DashboardBackend###0090-DashboardMyTickets
 
-By default the module is enabled.
-
-Have fun!
-
-MAWOH GmbH
-mail@support.mawoh.de
 
