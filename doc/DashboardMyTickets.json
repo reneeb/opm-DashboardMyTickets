@@ -12,5 +12,9 @@
     "description" : {
         "en": "A dashboard widget that shows all tickets of an agent.",
         "de": "Ein Dashboardwidget, das alle Tickets eines Agenten anzeigt"
-    }
+    },
+    "exclude_files" : [
+        "doc/DashboardMyTickets.json",
+        "README.md"
+    ]
 }
