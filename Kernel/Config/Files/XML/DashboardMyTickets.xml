@@ -5,7 +5,7 @@
         <Navigation>Frontend::Agent::View::Dashboard</Navigation>
         <Value>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::Dashboard::TicketDashboardMyTickets</Item>
+                <Item Key="Module">Kernel::Output::HTML::Dashboard::MyTickets</Item>
                 <Item Key="Title">My Tickets</Item>
                 <Item Key="Description">All my tickets</Item>
                 <Item Key="Attributes"></Item>
