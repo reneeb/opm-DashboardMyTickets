@@ -2,17 +2,19 @@
 
 =head1 Name
 
-MyTicketsDashlet
+DashboardMyTickets
 
 =head1 Description
 
 This packages provides dashboard module that shows only my tickets.
+This is a fork of L<MyTicketsDashlet|https://github.com/freneticf/MyTicketsDashlet>
+
 
 =head1 Prerequisites
 
 =over
 
-=item * OTRS 5.0
+=item * OTRS 6.0
 
 =back
 
@@ -26,7 +28,7 @@ Download the package and install it via admin interface -> package manager.
 
 =item * Configure it via admin interface -> SysConfig
 
-=item * Ticket -> Frontend::Agent::Dashboard -> DashboardBackend###0090-MyTicketsDashlet
+=item * Ticket -> Frontend::Agent::Dashboard -> DashboardBackend###0090-DashboardMyTickets
 
 =item * By default the module is enabled.
 
@@ -34,7 +36,7 @@ Download the package and install it via admin interface -> package manager.
 
 =head1 Source Code
 
-Fork me on github L<https://github.com/freneticf/MyTicketsDashlet>
+Fork me on github L<https://github.com/reneeb/DashboardMyTickets>
 
 =head1 License
 
