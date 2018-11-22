@@ -19,6 +19,11 @@
                 <Item Key="CacheTTLLocal">0.5</Item>
                 <Item Key="DefaultColumns">
                     <Hash>
+			<DefaultItem ValueType="Select">
+                            <Item ValueType="Option" Value="0" Translatable="1">0 - Disabled</Item>
+                            <Item ValueType="Option" Value="1" Translatable="1">1 - Available</Item>
+                            <Item ValueType="Option" Value="2" Translatable="1">2 - Enabled by default</Item>
+                        </DefaultItem>
                         <Item Key="Age">2</Item>
                         <Item Key="Changed">1</Item>
                         <Item Key="CustomerID">1</Item>
