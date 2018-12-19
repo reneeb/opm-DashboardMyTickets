@@ -874,6 +874,18 @@ sub Run {
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
+    if ( $ConfigObject->Get('DashboardMyTickets::ShowClosedTickets') ) {
+        $LayoutObject->Block(
+            Name => 'ContentLargeTicketGenericFilterClosed',
+            Data => {
+                %Param,
+                %{ $Self->{Config} },
+                Name => $Self->{Name},
+                %{$Summary},
+            },
+        );
+    }
+
     # show only AssignedToCustomerUser if we have the filter
     if ( $TicketSearchSummary{AssignedToCustomerUser} ) {
         $LayoutObject->Block(
@@ -2494,21 +2506,31 @@ sub _SearchParamsGet {
 
     my %TicketSearchSummary = (
         Open => {
-            OwnerIDs => [ $Self->{UserID}, ],
+            OwnerIDs  => [ $Self->{UserID}, ],
             StateType => [ 'open', ],
-            LockIDs      => $TicketSearch{LockIDs} // undef,
+            LockIDs   => $TicketSearch{LockIDs} // undef,
         },
         Reminder => {
-            OwnerIDs => [ $Self->{UserID}, ],
+            OwnerIDs  => [ $Self->{UserID}, ],
             StateType => [ 'pending reminder', ],
-            LockIDs      => $TicketSearch{LockIDs} // undef,
+            LockIDs   => $TicketSearch{LockIDs} // undef,
         },
         Pending => {
-            OwnerIDs => [ $Self->{UserID}, ],
+            OwnerIDs  => [ $Self->{UserID}, ],
             StateType => [ 'pending auto', ],
-            LockIDs      => $TicketSearch{LockIDs} // undef,
+            LockIDs   => $TicketSearch{LockIDs} // undef,
         },
     );
+
+    my $ConfigObject      = $Kernel::OM->Get('Kernel::Config');
+    my $ShowClosedTickets = $ConfigObject->Get('DashboardMyTickets::ShowClosedTickets');
+    if ( $ShowClosedTickets ) {
+        $TicketSearchSummary{Closed} = {
+            OwnerIDs  => [ $Self->{UserID}, ],
+            StateType => [ 'closed', ],
+            LockIDs   => $TicketSearch{LockIDs} // undef,
+        };
+    }
 
     if ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
 

@@ -12,6 +12,9 @@
     <li class="[% Data.item("Open::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Open" data-filter="Open">[% Translate("Open tickets") | html %] ([% Data.Open | html %])</a></li>
     <li class="[% Data.item("Reminder::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Reminder" data-filter="Reminder">[% Translate("Reminder tickets") | html %] ([% Data.Reminder | html %])</a></li>
     <li class="[% Data.item("Pending::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Pending" data-filter="Pending">[% Translate("Pending tickets") | html %] ([% Data.Pending | html %])</a></li>
+[% RenderBlockStart("ContentLargeTicketGenericFilterClosed") %]
+    <li class="[% Data.item("Closed::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Closed" data-filter="Closed">[% Translate("Closed tickets") | html %] ([% Data.Closed | html %])</a></li>
+[% RenderBlockEnd("ContentLargeTicketGenericFilterClosed") %]
 </ul>
 [% RenderBlockStart("ContentLargeTicketGenericFilterNavBar") %]
 <span class="Pagination">
