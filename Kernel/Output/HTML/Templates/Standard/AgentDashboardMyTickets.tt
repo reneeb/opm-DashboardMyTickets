@@ -9,6 +9,7 @@
 
 [% RenderBlockStart("ContentLargeTicketGenericFilter") %]
 <ul class="Tab Actions">
+    <li class="[% Data.item("New::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]New" data-filter="New">[% Translate("New tickets") | html %] ([% Data.New | html %])</a></li>
     <li class="[% Data.item("Open::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Open" data-filter="Open">[% Translate("Open tickets") | html %] ([% Data.Open | html %])</a></li>
     <li class="[% Data.item("Reminder::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Reminder" data-filter="Reminder">[% Translate("Reminder tickets") | html %] ([% Data.Reminder | html %])</a></li>
     <li class="[% Data.item("Pending::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Pending" data-filter="Pending">[% Translate("Pending tickets") | html %] ([% Data.Pending | html %])</a></li>

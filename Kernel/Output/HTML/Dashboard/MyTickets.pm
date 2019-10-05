@@ -2505,6 +2505,11 @@ sub _SearchParamsGet {
     my %LockName2ID = reverse %LockList;
 
     my %TicketSearchSummary = (
+        New => {
+            OwnerIDs  => [ $Self->{UserID}, ],
+            StateType => [ 'new', ],
+            LockIDs   => $TicketSearch{LockIDs} // undef,
+        },
         Open => {
             OwnerIDs  => [ $Self->{UserID}, ],
             StateType => [ 'open', ],
