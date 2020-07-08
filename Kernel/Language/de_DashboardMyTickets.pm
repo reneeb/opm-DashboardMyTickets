@@ -14,12 +14,11 @@ use warnings;
 sub Data {
     my $Self = shift;
 
-    # Template: AAAITSMConfigItem
     $Self->{Translation}->{'My Tickets'} = 'Meine Tickets';
-    $Self->{Translation}->{'Open tickets'} = 'offenen Tickets';
+    $Self->{Translation}->{'Open tickets'} = 'Offene Tickets';
     $Self->{Translation}->{'Reminder tickets'} = 'Erinnerungstickets';
     $Self->{Translation}->{'Pending tickets'} = 'Wartentickets';
-
+    $Self->{Translation}->{'New tickets'} = 'Neue Tickets';
 }
 
 1;
