@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<otrs_config version="2.0" init="Application">
+<otobo_config version="2.0" init="Application">
     <Setting Name="DashboardBackend###0090-DashboardMyTickets" Required="0" Valid="1">
         <Description Translatable="1">Parameters for the dashboard backend of the "My open Ticket" overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
         <Navigation>Frontend::Agent::View::Dashboard</Navigation>
@@ -24,27 +24,27 @@
                             <Item ValueType="Option" Value="1" Translatable="1">1 - Available</Item>
                             <Item ValueType="Option" Value="2" Translatable="1">2 - Enabled by default</Item>
                         </DefaultItem>
-                        <Item Key="Age">2</Item>
-                        <Item Key="Changed">1</Item>
-                        <Item Key="CustomerID">1</Item>
-                        <Item Key="CustomerName">1</Item>
-                        <Item Key="CustomerUserID">1</Item>
-                        <Item Key="EscalationResponseTime">1</Item>
-                        <Item Key="EscalationSolutionTime">1</Item>
-                        <Item Key="EscalationTime">1</Item>
-                        <Item Key="EscalationUpdateTime">1</Item>
-                        <Item Key="TicketNumber">2</Item>
-                        <Item Key="Lock">1</Item>
-                        <Item Key="Owner">1</Item>
-                        <Item Key="PendingTime">1</Item>
-                        <Item Key="Queue">2</Item>
-                        <Item Key="Responsible">1</Item>
-                        <Item Key="Priority">1</Item>
-                        <Item Key="Service">1</Item>
-                        <Item Key="State">1</Item>
-                        <Item Key="SLA">1</Item>
-                        <Item Key="Title">2</Item>
-                        <Item Key="Type">1</Item>
+                        <Item Key="Age" SelectedID="2"></Item>
+                        <Item Key="Changed" SelectedID="1"></Item>
+                        <Item Key="CustomerID" SelectedID="1"></Item>
+                        <Item Key="CustomerName" SelectedID="1"></Item>
+                        <Item Key="CustomerUserID" SelectedID="1"></Item>
+                        <Item Key="EscalationResponseTime" SelectedID="1"></Item>
+                        <Item Key="EscalationSolutionTime" SelectedID="1"></Item>
+                        <Item Key="EscalationTime" SelectedID="1"></Item>
+                        <Item Key="EscalationUpdateTime" SelectedID="1"></Item>
+                        <Item Key="TicketNumber" SelectedID="2"></Item>
+                        <Item Key="Lock" SelectedID="1"></Item>
+                        <Item Key="Owner" SelectedID="1"></Item>
+                        <Item Key="PendingTime" SelectedID="1"></Item>
+                        <Item Key="Queue" SelectedID="2"></Item>
+                        <Item Key="Responsible" SelectedID="1"></Item>
+                        <Item Key="Priority" SelectedID="1"></Item>
+                        <Item Key="Service" SelectedID="1"></Item>
+                        <Item Key="State" SelectedID="1"></Item>
+                        <Item Key="SLA" SelectedID="1"></Item>
+                        <Item Key="Title" SelectedID="2"></Item>
+                        <Item Key="Type" SelectedID="1"></Item>
                     </Hash>
                 </Item>
                 <Item Key="Mandatory">0</Item>
@@ -58,4 +58,4 @@
             <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
-</otrs_config>
+</otobo_config>
