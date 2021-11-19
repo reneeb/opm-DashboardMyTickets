@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <otrs_package version="1.0">
-    <!-- GENERATED WITH OTRS::OPM::Maker::Command::sopm (1.4) -->
+    <!-- GENERATED WITH OTRS::OPM::Maker::Command::sopm (1.44) -->
     <Name>DashboardMyTickets</Name>
     <Version>6.0.6</Version>
     <Framework>6.0.x</Framework>
