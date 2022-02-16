@@ -16,6 +16,9 @@
 [% RenderBlockStart("ContentLargeTicketGenericFilterClosed") %]
     <li class="[% Data.item("Closed::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Closed" data-filter="Closed">[% Translate("Closed tickets") | html %] ([% Data.Closed | html %])</a></li>
 [% RenderBlockEnd("ContentLargeTicketGenericFilterClosed") %]
+[% RenderBlockStart("ContentLargeTicketGenericFilterAll") %]
+    <li class="[% Data.item("All::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]All" data-filter="All">[% Translate("All tickets") | html %] ([% Data.All | html %])</a></li>
+[% RenderBlockEnd("ContentLargeTicketGenericFilterAll") %]
 </ul>
 [% RenderBlockStart("ContentLargeTicketGenericFilterNavBar") %]
 <span class="Pagination">

@@ -250,10 +250,14 @@ sub new {
     }
 
     $Self->{PrefKeyShown}   = 'UserDashboardPref' . $Self->{Name} . '-Shown';
+    $Self->{PrefKeyClosed}  = 'UserDashboardPref' . $Self->{Name} . '-Closed';
+    $Self->{PrefKeyAll}     = 'UserDashboardPref' . $Self->{Name} . '-All';
     $Self->{PrefKeyColumns} = 'UserDashboardPref' . $Self->{Name} . '-Columns';
     $Self->{PageShown}      = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{ $Self->{PrefKeyShown} }
         || $Self->{Config}->{Limit};
-    $Self->{StartHit} = int( $ParamObject->GetParam( Param => 'StartHit' ) || 1 );
+    $Self->{ShowAll}    = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{ $Self->{PrefKeyAll} };
+    $Self->{ShowClosed} = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{ $Self->{PrefKeyClosed} };
+    $Self->{StartHit}   = int( $ParamObject->GetParam( Param => 'StartHit' ) || 1 );
 
     # define filterable columns
     $Self->{ValidFilterableColumns} = {
@@ -444,6 +448,36 @@ sub Preferences {
         },
     );
 
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    if ( $ConfigObject->Get('DashboardMyTickets::ShowClosedTickets') ) {
+        splice @Params, 1, 0, {
+            Desc  => Translatable('Show tab with closed tickets'),
+            Name  => $Self->{PrefKeyClosed},
+            Block => 'Option',
+            Data  => {
+                1 => 'Yes',
+                0 => 'No',
+            },
+            SelectedID  => $Self->{ShowClosed},
+            Translation => 0,
+        };
+    }
+
+    if ( $ConfigObject->Get('DashboardMyTickets::ShowAllTickets') ) {
+        splice @Params, 1, 0, {
+            Desc  => Translatable('Show tab with all tickets'),
+            Name  => $Self->{PrefKeyAll},
+            Block => 'Option',
+            Data  => {
+                1 => 'Yes',
+                0 => 'No',
+            },
+            SelectedID  => $Self->{ShowAll},
+            Translation => 0,
+        };
+    }
+
     return @Params;
 }
 
@@ -579,7 +613,9 @@ sub Run {
         );
     }
 
-    my $CacheKey = join '-', $Self->{Name}, $Self->{Action}, $Self->{PageShown}, $Self->{StartHit}, $Self->{UserID};
+    my $CacheKey = join '-',
+        $Self->{Name}, $Self->{Action}, $Self->{PageShown}, $Self->{StartHit},
+        ($Self->{ShowClosed} // 0 ), ($Self->{ShowAll} // 0), $Self->{UserID};
     my $CacheColumns = join(
         ',',
         map { $_ . '=>' . $Self->{GetColumnFilterSelect}->{$_} } sort keys %{ $Self->{GetColumnFilterSelect} }
@@ -874,9 +910,21 @@ sub Run {
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    if ( $ConfigObject->Get('DashboardMyTickets::ShowClosedTickets') ) {
+    if ( $Self->{ShowClosed} ) {
         $LayoutObject->Block(
             Name => 'ContentLargeTicketGenericFilterClosed',
+            Data => {
+                %Param,
+                %{ $Self->{Config} },
+                Name => $Self->{Name},
+                %{$Summary},
+            },
+        );
+    }
+
+    if ( $Self->{ShowAll} ) {
+        $LayoutObject->Block(
+            Name => 'ContentLargeTicketGenericFilterAll',
             Data => {
                 %Param,
                 %{ $Self->{Config} },
@@ -2527,12 +2575,19 @@ sub _SearchParamsGet {
         },
     );
 
-    my $ConfigObject      = $Kernel::OM->Get('Kernel::Config');
-    my $ShowClosedTickets = $ConfigObject->Get('DashboardMyTickets::ShowClosedTickets');
-    if ( $ShowClosedTickets ) {
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    if ( $Self->{ShowClosed} ) {
         $TicketSearchSummary{Closed} = {
             OwnerIDs  => [ $Self->{UserID}, ],
             StateType => [ 'closed', ],
+            LockIDs   => $TicketSearch{LockIDs} // undef,
+        };
+    }
+
+    if ( $Self->{ShowAll} ) {
+        $TicketSearchSummary{All} = {
+            OwnerIDs  => [ $Self->{UserID}, ],
             LockIDs   => $TicketSearch{LockIDs} // undef,
         };
     }
