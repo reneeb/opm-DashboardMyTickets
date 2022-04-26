@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.0">
+<otobo_package version="1.0">
     <!-- GENERATED WITH OPM::Maker::Command::sopm (1.1.0) -->
     <Name>DashboardMyTickets</Name>
-    <Version>10.0.2</Version>
+    <Version>10.0.3</Version>
     <Framework>10.0.x</Framework>
     <Framework>10.1.x</Framework>
     <Vendor>Perl-Services.de</Vendor>
@@ -17,4 +17,4 @@
         <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentDashboardMyTickets.tt" />
         <File Permission="644" Location="doc/en/DashboardMyTickets.pod" />
     </Filelist>
-</otrs_package>
+</otobo_package>
