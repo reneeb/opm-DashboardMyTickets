@@ -1,5 +1,5 @@
 # --
-# Copyright (c) 2018- Perl-Services.de, http://perl-services.de
+# Copyright (c) 2018- Perl-Services.de, https://www.perl-services.de
 # Based on Kernel/Output/HTML/Dashboard/TicketDashboardMyTickets.pm copyright (c) 2014-2018 Mawoh GmbH
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
