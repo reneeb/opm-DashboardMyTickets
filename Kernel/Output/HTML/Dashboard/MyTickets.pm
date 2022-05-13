@@ -1940,6 +1940,8 @@ sub Run {
                         );
                     }
                     $DataValue = $CustomerInfo{$Column};
+
+                    $DataValue //= $Ticket{$Column} if $Column eq 'CustomerID';
                 }
                 else {
                     $DataValue = $Ticket{$Column};
