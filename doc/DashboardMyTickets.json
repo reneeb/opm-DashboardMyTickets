@@ -1,6 +1,6 @@
 {
     "name": "DashboardMyTickets",
-    "version": "10.0.3",
+    "version": "10.0.4",
     "product": "otobo",
     "framework": [
         "10.0.x",
