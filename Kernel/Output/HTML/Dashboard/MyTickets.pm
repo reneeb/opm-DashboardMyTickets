@@ -910,7 +910,7 @@ sub Run {
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    if ( $Self->{ShowClosed} ) {
+    if ( $Self->{ShowClosed} && $ConfigObject->Get('DashboardMyTickets::ShowClosedTickets') ) {
         $LayoutObject->Block(
             Name => 'ContentLargeTicketGenericFilterClosed',
             Data => {
@@ -922,7 +922,7 @@ sub Run {
         );
     }
 
-    if ( $Self->{ShowAll} ) {
+    if ( $Self->{ShowAll} && $ConfigObject->Get('DashboardMyTickets::ShowAllTickets') ) {
         $LayoutObject->Block(
             Name => 'ContentLargeTicketGenericFilterAll',
             Data => {
@@ -2588,7 +2588,14 @@ sub _SearchParamsGet {
     }
 
     if ( $Self->{ShowAll} ) {
+        my %AllOpts;
+
+        if ( !$Self->{ShowClosed} || !$ConfigObject->Get('DashboardMyTickets::ShowClosedTickets') ) {
+            $AllOpts{StateType} = 'Open';
+        }
+
         $TicketSearchSummary{All} = {
+            %AllOpts,
             OwnerIDs  => [ $Self->{UserID}, ],
             LockIDs   => $TicketSearch{LockIDs} // undef,
         };
