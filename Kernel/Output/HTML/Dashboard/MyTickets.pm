@@ -1,10 +1,12 @@
 # --
+# Copyright (C) 2001-2021 OTRS AG, https://otrs.com/
+# Copyright (C) 2021 Znuny GmbH, https://znuny.org/
 # Copyright (c) 2018- Perl-Services.de, https://www.perl-services.de
 # Based on Kernel/Output/HTML/Dashboard/TicketDashboardMyTickets.pm copyright (c) 2014-2018 Mawoh GmbH
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::Dashboard::MyTickets;
@@ -253,7 +255,8 @@ sub new {
     $Self->{PrefKeyClosed}  = 'UserDashboardPref' . $Self->{Name} . '-Closed';
     $Self->{PrefKeyAll}     = 'UserDashboardPref' . $Self->{Name} . '-All';
     $Self->{PrefKeyColumns} = 'UserDashboardPref' . $Self->{Name} . '-Columns';
-    $Self->{PageShown}      = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{ $Self->{PrefKeyShown} }
+    $Self->{PageShown}      = $Param{PageShown}
+        || $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{ $Self->{PrefKeyShown} }
         || $Self->{Config}->{Limit};
     $Self->{ShowAll}    = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{ $Self->{PrefKeyAll} };
     $Self->{ShowClosed} = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{ $Self->{PrefKeyClosed} };
@@ -329,10 +332,8 @@ sub new {
     if ( $Self->{Config}->{IsProcessWidget} ) {
 
         # get process management configuration
-        $Self->{ProcessManagementProcessID}
-            = $Kernel::OM->Get('Kernel::Config')->Get('Process::DynamicFieldProcessManagementProcessID');
-        $Self->{ProcessManagementActivityID}
-            = $Kernel::OM->Get('Kernel::Config')->Get('Process::DynamicFieldProcessManagementActivityID');
+        $Self->{ProcessManagementProcessID}  = $ConfigObject->Get('Process::DynamicFieldProcessManagementProcessID');
+        $Self->{ProcessManagementActivityID} = $ConfigObject->Get('Process::DynamicFieldProcessManagementActivityID');
 
         # get the list of processes in the system
         my $ProcessListHash = $Kernel::OM->Get('Kernel::System::ProcessManagement::Process')->ProcessList(
@@ -343,6 +344,21 @@ sub new {
 
         # use only the process EntityIDs
         @{ $Self->{ProcessList} } = sort keys %{$ProcessListHash};
+    }
+
+    # Mentions
+    $Self->{AdditionalMentionTicketSearchParams} = {};
+    if ( $Self->{Config}->{IncludesMentions} ) {
+        my $MentionObject = $Kernel::OM->Get('Kernel::System::Mention');
+
+        $Self->{MentionTicketData} = $MentionObject->GetDashboardWidgetTicketData(
+            UserID => $Self->{UserID},
+        );
+
+        if ( IsHashRefWithData( $Self->{MentionTicketData} ) ) {
+            $Self->{AdditionalMentionTicketSearchParams}->{TicketID} = $Self->{MentionTicketData}->{TicketIDs};
+            $Self->{AdditionalMentionTicketSearchParams}->{UserID}   = 1;
+        }
     }
 
     return $Self;
@@ -536,11 +552,21 @@ sub FilterContent {
         }
 
         if ( !$Self->{Config}->{IsProcessWidget} || IsArrayRefWithData( $Self->{ProcessList} ) ) {
-            @OriginalViewableTickets = $Kernel::OM->Get('Kernel::System::Ticket')->TicketSearch(
-                %TicketSearch,
-                %{ $TicketSearchSummary{ $Self->{Filter} } },
-                Result => 'ARRAY',
-            );
+
+            # Ticket search will only be executed if widget does not include mentions
+            # or if it does, the user must have mentions.
+            if (
+                !$Self->{Config}->{IncludesMentions}
+                || $Self->{MentionTicketData}
+                )
+            {
+                @OriginalViewableTickets = $Kernel::OM->Get('Kernel::System::Ticket')->TicketSearch(
+                    %TicketSearch,
+                    %{ $TicketSearchSummary{ $Self->{Filter} } },
+                    %{ $Self->{AdditionalMentionTicketSearchParams} },    # is empty if no mentions present
+                    Result => 'ARRAY',
+                );
+            }
         }
     }
 
@@ -604,6 +630,7 @@ sub Run {
     my @Columns             = @{ $SearchParams{Columns} };
     my %TicketSearch        = %{ $SearchParams{TicketSearch} };
     my %TicketSearchSummary = %{ $SearchParams{TicketSearchSummary} };
+    my %Filter              = %{ $SearchParams{Filter} };
 
     # Add the additional filter to the ticket search param.
     if ( $Self->{AdditionalFilter} ) {
@@ -675,13 +702,16 @@ sub Run {
         $CacheKey .= '-' . $Self->{AdditionalFilter};
     }
 
-    # get cache object
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
-    # check cache
     my $TicketIDs = $CacheObject->Get(
         Type => 'Dashboard',
         Key  => $CacheKey . '-' . $Self->{Filter} . '-List',
+    );
+
+    my $CustomColumns = $CacheObject->Get(
+        Type => 'Dashboard',
+        Key  => $CacheKey . '-' . $Self->{Filter} . '-CustomColumns',
     );
 
     # find and show ticket list
@@ -765,13 +795,33 @@ sub Run {
 
             # Execute search.
             else {
-                @TicketIDsArray = $TicketObject->TicketSearch(
-                    Result => 'ARRAY',
-                    %TicketSearch,
-                    %{ $TicketSearchSummary{ $Self->{Filter} } },
-                    %ColumnFilter,
-                    Limit => $Self->{PageShown} + $Self->{StartHit} - 1,
-                );
+
+                # Mentions
+                if (
+                    $Self->{Config}->{IncludesMentions}
+                    && $Self->{MentionTicketData}
+                    && $Self->{MentionTicketData}->{CustomColumns}
+                    )
+                {
+                    $CustomColumns = $Self->{MentionTicketData}->{CustomColumns};
+                }
+
+                # Ticket search will only be executed if widget does not include mentions
+                # or if it does, the user must have mentions.
+                if (
+                    !$Self->{Config}->{IncludesMentions}
+                    || $Self->{MentionTicketData}
+                    )
+                {
+                    @TicketIDsArray = $TicketObject->TicketSearch(
+                        Result => 'ARRAY',
+                        %TicketSearch,
+                        %{ $TicketSearchSummary{ $Self->{Filter} } },
+                        %ColumnFilter,
+                        Limit => $Self->{PageShown} + $Self->{StartHit} - 1,
+                        %{ $Self->{AdditionalMentionTicketSearchParams} },    # is empty if no mentions present
+                    );
+                }
             }
         }
         $TicketIDs = \@TicketIDsArray;
@@ -862,12 +912,23 @@ sub Run {
 
                 # Execute search.
                 else {
-                    $Summary->{$Type} = $TicketObject->TicketSearch(
-                        Result => 'COUNT',
-                        %TicketSearch,
-                        %{ $TicketSearchSummary{$Type} },
-                        %ColumnFilter,
-                    ) || 0;
+                    $Summary->{$Type} = 0;
+
+                    # Ticket search will only be executed if widget does not include mentions
+                    # or if it does, the user must have mentions.
+                    if (
+                        !$Self->{Config}->{IncludesMentions}
+                        || $Self->{MentionTicketData}
+                        )
+                    {
+                        $Summary->{$Type} = $TicketObject->TicketSearch(
+                            Result => 'COUNT',
+                            %TicketSearch,
+                            %{ $TicketSearchSummary{$Type} },
+                            %ColumnFilter,
+                            %{ $Self->{AdditionalMentionTicketSearchParams} },    # is empty if no mentions present
+                        ) || 0;
+                    }
                 }
             }
         }
@@ -887,12 +948,25 @@ sub Run {
             Value => $TicketIDs,
             TTL   => $Self->{Config}->{CacheTTLLocal} * 60,
         );
+
+        if ($CustomColumns) {
+            $CacheObject->Set(
+                Type  => 'Dashboard',
+                Key   => $CacheKey . '-' . $Self->{Filter} . '-CustomColumns',
+                Value => $CustomColumns,
+                TTL   => $Self->{Config}->{CacheTTLLocal} * 60,
+            );
+        }
     }
 
     # Set the css class for the selected filter and additional filter.
     $Summary->{ $Self->{Filter} . '::Selected' } = 'Selected';
     if ( $Self->{AdditionalFilter} ) {
         $Summary->{ $Self->{AdditionalFilter} . '::Selected' } = 'Selected';
+    }
+
+    for my $Filter ( sort keys %Filter ) {
+        $Filter{$Filter}->{Count} = $Summary->{$Filter} || 0;
     }
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
@@ -905,6 +979,7 @@ sub Run {
             %{ $Self->{Config} },
             Name => $Self->{Name},
             %{$Summary},
+            Filter => $Filter{ $Self->{Filter} },
         },
     );
 
@@ -1037,7 +1112,7 @@ sub Run {
         next COLUMNNAME if !$GetColumnFilter{$ColumnName};
         $ColumnFilterLink
             .= ';' . $LayoutObject->Ascii2Html( Text => 'ColumnFilter' . $ColumnName )
-            . '=' . $LayoutObject->Ascii2Html( Text => $GetColumnFilter{$ColumnName} )
+            . '=' . $LayoutObject->LinkEncode( $GetColumnFilter{$ColumnName} );
     }
 
     my $LinkPage =
@@ -1066,14 +1141,17 @@ sub Run {
         IDPrefix    => 'Dashboard' . $Self->{Name},
         AJAX        => $Param{AJAX},
     );
-    $LayoutObject->Block(
-        Name => 'ContentLargeTicketGenericFilterNavBar',
-        Data => {
-            %{ $Self->{Config} },
-            Name => $Self->{Name},
-            %PageNav,
-        },
-    );
+
+    if ($Total) {
+        $LayoutObject->Block(
+            Name => 'ContentLargeTicketGenericFilterNavBar',
+            Data => {
+                %{ $Self->{Config} },
+                Name => $Self->{Name},
+                %PageNav,
+            },
+        );
+    }
 
     # show table header
     $LayoutObject->Block(
@@ -1095,7 +1173,7 @@ sub Run {
     $LayoutObject->AddJSData(
         Key   => 'InitContainerDashboard' . $Self->{Name},
         Value => {
-            SortBy => $Self->{SortBy} || 'Age',
+            SortBy  => $Self->{SortBy} || 'Age',
             OrderBy => $TicketSearch{OrderBy},
         },
     );
@@ -1262,7 +1340,7 @@ sub Run {
                     Name => 'ContentLargeTicketGenericHeaderTicketNumberColumn',
                     Data => {
                         %Param,
-                        CSS => $CSS || '',
+                        CSS   => $CSS || '',
                         Name  => $Self->{Name},
                         Title => $Title,
                     },
@@ -1341,36 +1419,38 @@ sub Run {
 
                 if ( $HeaderColumn eq 'CustomerID' ) {
 
-                    # send data to JS
-                    $LayoutObject->AddJSData(
-                        Key   => 'CustomerIDAutocomplete',
-                        Value => {
-                            QueryDelay          => 100,
-                            MaxResultsDisplayed => 20,
-                            MinQueryLength      => 2,
-                        },
-                    );
-                    $LayoutObject->Block(
-                        Name => 'ContentLargeTicketGenericHeaderColumnFilterLinkCustomerIDSearch',
-                        Data => {},
-                    );
+                    # #136 - todo this autocomplete has been disabled for now
+                    #                     # send data to JS
+                    #                     $LayoutObject->AddJSData(
+                    #                         Key   => 'CustomerIDAutocomplete',
+                    #                         Value => {
+                    #                             QueryDelay          => 100,
+                    #                             MaxResultsDisplayed => 20,
+                    #                             MinQueryLength      => 2,
+                    #                         },
+                    #                     );
+                    #                     $LayoutObject->Block(
+                    #                         Name => 'ContentLargeTicketGenericHeaderColumnFilterLinkCustomerIDSearch',
+                    #                         Data => {},
+                    #                     );
                 }
 
                 elsif ( $HeaderColumn eq 'Responsible' || $HeaderColumn eq 'Owner' ) {
 
-                    # send data to JS
-                    $LayoutObject->AddJSData(
-                        Key   => 'UserAutocomplete',
-                        Value => {
-                            QueryDelay          => 100,
-                            MaxResultsDisplayed => 20,
-                            MinQueryLength      => 2,
-                        },
-                    );
-                    $LayoutObject->Block(
-                        Name => 'ContentLargeTicketGenericHeaderColumnFilterLinkUserSearch',
-                        Data => {},
-                    );
+                    #136 - todo this autocomplete has been disabled for now
+                    #                     # send data to JS
+                    #                     $LayoutObject->AddJSData(
+                    #                         Key   => 'UserAutocomplete',
+                    #                         Value => {
+                    #                             QueryDelay          => 100,
+                    #                             MaxResultsDisplayed => 20,
+                    #                             MinQueryLength      => 2,
+                    #                         },
+                    #                     );
+                    #                     $LayoutObject->Block(
+                    #                         Name => 'ContentLargeTicketGenericHeaderColumnFilterLinkUserSearch',
+                    #                         Data => {},
+                    #                     );
                 }
             }
 
@@ -1415,19 +1495,21 @@ sub Run {
 
                 if ( $HeaderColumn eq 'CustomerUserID' ) {
 
-                    # send data to JS
-                    $LayoutObject->AddJSData(
-                        Key   => 'CustomerUserAutocomplete',
-                        Value => {
-                            QueryDelay          => 100,
-                            MaxResultsDisplayed => 20,
-                            MinQueryLength      => 2,
-                        },
-                    );
-                    $LayoutObject->Block(
-                        Name => 'ContentLargeTicketGenericHeaderColumnFilterLinkCustomerUserSearch',
-                        Data => {},
-                    );
+                    #136 - todo this autocomplete has been disabled for now
+                    #                     # send data to JS
+                    #                     $LayoutObject->AddJSData(
+                    #                         Key   => 'CustomerUserAutocomplete',
+                    #                         Value => {
+                    #                             QueryDelay          => 100,
+                    #                             MaxResultsDisplayed => 20,
+                    #                             MinQueryLength      => 2,
+                    #                         },
+                    #                     );
+
+                  #                     $LayoutObject->Block(
+                  #                         Name => 'ContentLargeTicketGenericHeaderColumnFilterLinkCustomerUserSearch',
+                  #                         Data => {},
+                  #                     );
                 }
             }
 
@@ -1547,7 +1629,7 @@ sub Run {
                     Name => 'ContentLargeTicketGenericHeaderColumn',
                     Data => {
                         HeaderColumnName => $DynamicFieldName || '',
-                        CSS => $CSS || '',
+                        CSS              => $CSS              || '',
                     },
                 );
 
@@ -1676,7 +1758,7 @@ sub Run {
                     Name => 'ContentLargeTicketGenericHeaderColumn',
                     Data => {
                         HeaderColumnName => $DynamicFieldName || '',
-                        CSS => $CSS || '',
+                        CSS              => $CSS              || '',
                     },
                 );
 
@@ -1707,6 +1789,8 @@ sub Run {
             DynamicFields => 0,
             Silent        => 1
         );
+
+        %Ticket = ( %Ticket, %{ $CustomColumns->{$TicketID} } ) if $CustomColumns->{$TicketID};
 
         next TICKETID if !%Ticket;
 
@@ -1771,7 +1855,7 @@ sub Run {
         # get needed objects
         my $BackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
         my $UserObject    = $Kernel::OM->Get('Kernel::System::User');
-        
+
         my %CustomerInfo;
 
         # show all needed columns
@@ -1839,7 +1923,7 @@ sub Run {
                 elsif ( $Column eq 'EscalationSolutionTime' ) {
                     $BlockType = 'Escalation';
                     $DataValue = $LayoutObject->CustomerAge(
-                        Age => $Ticket{SolutionTime} || 0,
+                        Age                => $Ticket{SolutionTime} || 0,
                         TimeShowAlwaysLong => 1,
                         Space              => ' ',
                     );
@@ -1850,7 +1934,7 @@ sub Run {
                 elsif ( $Column eq 'EscalationResponseTime' ) {
                     $BlockType = 'Escalation';
                     $DataValue = $LayoutObject->CustomerAge(
-                        Age => $Ticket{FirstResponseTime} || 0,
+                        Age                => $Ticket{FirstResponseTime} || 0,
                         TimeShowAlwaysLong => 1,
                         Space              => ' ',
                     );
@@ -1865,7 +1949,7 @@ sub Run {
                 elsif ( $Column eq 'EscalationUpdateTime' ) {
                     $BlockType = 'Escalation';
                     $DataValue = $LayoutObject->CustomerAge(
-                        Age => $Ticket{UpdateTime} || 0,
+                        Age                => $Ticket{UpdateTime} || 0,
                         TimeShowAlwaysLong => 1,
                         Space              => ' ',
                     );
@@ -1947,11 +2031,18 @@ sub Run {
                     $DataValue = $Ticket{$Column};
                 }
 
+                # add pill class
+                if ( $Column eq 'State' ) {
+                    if ( IsStringWithData( $Ticket{StateID} ) ) {
+                        $CSSClass .= 'pill StateID-' . $Ticket{StateID};
+                    }
+                }
+
                 if ( $Column eq 'Title' ) {
                     $LayoutObject->Block(
                         Name => "ContentLargeTicketTitle",
                         Data => {
-                            Title => "$DataValue " || '',
+                            Title      => "$DataValue " || '',
                             WholeTitle => $WholeTitle,
                             Class      => $CSSClass || '',
                         },
@@ -2072,6 +2163,8 @@ sub Run {
             CustomerID     => $Param{CustomerID},
             CustomerUserID => $Param{CustomerUserID},
             FilterActive   => $FilterActive,
+            Filter         => \%Filter,
+            FilterSelected => $Self->{Filter},
             SortBy         => $Self->{SortBy} || 'Age',
             OrderBy        => $TicketSearch{OrderBy},
             SortingColumn  => $Param{SortingColumn},
@@ -2136,10 +2229,11 @@ sub _InitialColumnFilter {
     my $ColumnFilterHTML = $LayoutObject->BuildSelection(
         Name        => 'ColumnFilter' . $Param{ColumnName} . $Self->{Name},
         Data        => $Data,
-        Class       => $Class,
+        Class       => $Class . ' Modernize',
         Translation => $TranslationOption,
         SelectedID  => '',
     );
+
     return $ColumnFilterHTML;
 }
 
@@ -2260,7 +2354,7 @@ sub _ColumnFilterJSON {
 
         my %Values = %{ $Param{ColumnValues} };
 
-        # set possible values
+        # Set possible values.
         for my $ValueKey ( sort { lc $Values{$a} cmp lc $Values{$b} } keys %Values ) {
             push @{$Data}, {
                 Key   => $ValueKey,
@@ -2510,7 +2604,7 @@ sub _SearchParamsGet {
         %TicketSearch,
         %DynamicFieldsParameters,
         Permission => $Self->{Config}->{Permission} || 'ro',
-        UserID => $Self->{UserID},
+        UserID     => $Self->{UserID},
     );
 
     # CustomerInformationCenter shows data per CustomerID
@@ -2577,6 +2671,21 @@ sub _SearchParamsGet {
         },
     );
 
+    my %Filter = (
+        New => {
+            Label => "My new tickets",
+        },
+        Open => {
+            Label => "My open tickets",
+        },
+        Reminder => {
+            Label => "My reminder tickets",
+        },
+        Pending => {
+            Label => "My pending tickets",
+        },
+    );
+
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     if ( $Self->{ShowClosed} ) {
@@ -2585,6 +2694,8 @@ sub _SearchParamsGet {
             StateType => [ 'closed', ],
             LockIDs   => $TicketSearch{LockIDs} // undef,
         };
+
+        $Filter{Closed} = 'My closed tickets';
     }
 
     if ( $Self->{ShowAll} ) {
@@ -2599,6 +2710,8 @@ sub _SearchParamsGet {
             OwnerIDs  => [ $Self->{UserID}, ],
             LockIDs   => $TicketSearch{LockIDs} // undef,
         };
+
+        $Filter{All} = 'All my tickets';
     }
 
     if ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
@@ -2641,6 +2754,7 @@ sub _SearchParamsGet {
         Columns             => \@Columns,
         TicketSearch        => \%TicketSearch,
         TicketSearchSummary => \%TicketSearchSummary,
+        Filter              => \%Filter,
     );
 }
 
